@@ -1,17 +1,22 @@
 import React, { Component } from "react";
-import XLSX from "xlsx";
-
-var json2xls = require("json2xls");
-
+import exportFromJSON from "export-from-json";
+  
+const fileName = 'download'  
+const exportType = 'xls' 
 export default class Xlto extends Component {
   constructor(props) {
     super(props);
     this.state = { data: this.props.prod, bigdata: [], filt: this.props.filt };
   }
+
+  // using filtered output then getting the data
+  ExportToExcel = (data) => {  
+    exportFromJSON({ data, fileName, exportType })  
+  }
   render() {
     var b = [],
       j = 0;
-    const type = "xls";
+    // copying the filtered output
     this.state.data.map((val) => {
       if (val.Category === this.state.filt) {
         b[j] = val;
@@ -19,9 +24,6 @@ export default class Xlto extends Component {
       }
       return "";
     });
-
-    console.log("filter json", this.state.bigdata);
-
     return (
       <div
         className="btn btn-primary"
@@ -29,28 +31,13 @@ export default class Xlto extends Component {
           this.setState({ bigdata: b });
         }}
         onClick={() => {
+          this.ExportToExcel(this.state.bigdata)
           window.location.reload();
-        }}
-        onMouseOut={() => {
-          var gg = this.state.bigdata;
-          console.log("mygg", type, gg);
-          this.convert(gg, this.state.fildownload, type);
         }}
       >
         filter save
       </div>
     );
   }
-  componentWillUnmount() {
-    console.log("bye bye");
-  }
-  convert = (arr, name) => {
-    console.log("convert arr", arr);
-    const jj = arr;
-    console.log("convert jj", jj);
-    console.log("my jj", typeof jj);
-    var real = json2xls(jj);
-    XLSX.writeFile(real,{bookType:"xlsx",type:"binary"})
-  };
+  
 }
-
